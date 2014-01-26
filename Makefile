@@ -1,4 +1,5 @@
-.PHONY: clean transposer test
+.PHONY: clean transposer test run_test
+.DEFAULT_GOAL := run_test
 
 BUILD_DIR := build
 OBJ_DIR := $(BUILD_DIR)/obj
@@ -12,19 +13,23 @@ GTEST_MAIN := $(GTEST_DIR)/src/gtest_main.cc
 
 CFLAGS := -g -std=c++11 -pedantic -Wall -Wextra
 LD_FLAGS := -lboost_regex
-TEST_CFLAGS := $(CFLAGS) -isystem $(GTEST_DIR)/include -pthread
+# googletest needs pthread
+TEST_CFLAGS := $(CFLAGS) -isystem $(GTEST_DIR)/include -pthread -I$(SRC_DIR)
 TEST_LDFLAGS := $(LD_FLAGS)
 
 transposer: $(BIN_DIR)/transposer
-
-test: $(BIN_DIR)/test
 
 $(BIN_DIR)/transposer: $(SRC_DIR)/*.cpp | $(BIN_DIR)
 	g++ $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 
 # TESTS
-$(BIN_DIR)/test: $(GTEST_MAIN) $(TEST_DIR)/*.cpp $(LIBGTEST) | $(BIN_DIR)
+run_test: test
+	$(BIN_DIR)/test
+
+test: $(BIN_DIR)/test
+
+$(BIN_DIR)/test: $(GTEST_MAIN) $(SRC_DIR)/*.cpp $(TEST_DIR)/*.cpp $(LIBGTEST) | $(BIN_DIR)
 	g++ $(TEST_CFLAGS) $(TEST_LDFLAGS) $^ -o $@
 
 $(OBJ_DIR)/gtest-all.o: $(GTEST_DIR)/src/gtest-all.cc | $(OBJ_DIR)
