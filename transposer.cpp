@@ -2,176 +2,145 @@
 #include <string>
 #include <sstream>
 #include <vector>
+//gcc 4.8 does not support c++11 regex
+//#include <regex>
+#include <boost/regex.hpp>
 
-using namespace std;
+const std::vector<std::string> notes = {"A", "A#", "B", "C", "C#", "D",
+					   "D#", "E", "F", "F#", "G", "G#"};
 
-const vector<string> notes = {"A", "A#", "B", "C", "C#", "D",
-				 "D#", "E", "F", "G", "G#"};
-
-class Transposer
-{
-public:
-   string transpose(const string &text, int halfsteps) const;
-};
+typedef std::string::difference_type line_position_t;
 
 class Chord
 {
 public:
-   Chord(std::string& chord_line, const std::string::size_type& position) :
-      chord_line(chord_line),
-      position(position)
+   Chord(const std::string& chord_string)
    {
+      std::string::size_type copy_length;
+if(chord_string.length() == 1 || (chord_string[1] != '#'
+				     && chord_string[1] != 'b'))
+      {
+copy_length = 1;
+      }
+      else
+      {
+copy_length = 2;
+      }
+   root = chord_string.substr(0, copy_length);
+   if(chord_string.length() > copy_length)
+   {
+      quality = chord_string.substr(copy_length);
+}
    }
 
-   Chord() :
-      chord_line(""),
-      position(0)
+   std::string str() const
    {
+      return root + quality;
    }
-   
-   const std::string& str() const
-   {
-      return chord_line;
-   }
+
+Chord& transpose(const int half_steps)
+{
+auto pos = std::find(notes.begin(), notes.end(), root);
+if(pos != notes.end())
+{
+auto distance = std::distance(notes.begin(), pos);
+auto new_distance = (distance + half_steps) % notes.size();
+root = notes[new_distance];
+}
+
+//exception on failure?
+
+return *this;
+}
 private:
-   std::string& chord_line;
-   std::string::size_type position;
+   std::string root;
+std::string quality;
 };
 
-ostream& operator<<(ostream& stream, const Chord& chord)
+struct PositionedChord
+{
+   PositionedChord(const std::string& chord_string,
+		   const line_position_t position) :
+      chord(Chord(chord_string)), position(position)
+   {
+   }
+
+   Chord chord;
+   line_position_t position;
+};
+
+std::ostream& operator<<(std::ostream& stream, const Chord& chord)
 {
    stream << chord.str();
    return stream;
 }
 
-class ChordIterator : public std::iterator<std::input_iterator_tag,
-					   Chord>
+
+std::vector<PositionedChord> parse_chord_line(const std::string& chord_line)
 {
-public:
-   ChordIterator(std::string &chord_line) :
-      chord_line(chord_line),
-      line_position(0)
-   {
-   }
+   boost::regex chord_pattern{R"(\S+)"};
+   boost::sregex_iterator regex_it{chord_line.begin(), chord_line.end(),
+				 chord_pattern};
+   boost::sregex_iterator regex_end;
 
-   ChordIterator begin()
-   {
-      return ChordIterator(chord_line);
-   }
+std::vector<PositionedChord> chords;
+auto insert_iterator(std::back_inserter(chords));
 
-   ChordIterator end()
-   {
-      ChordIterator it(chord_line);
-      it.line_position = std::string::npos;
-      return it;
-   }
+auto match_to_chord = [](const boost::smatch& match) {return PositionedChord{match[0], match.position()};};
 
-   ChordIterator& operator++()
-   {
-      // use regex! :D
-      std::string::size_type next_space;
-/*      if(line_position == 0)
-      {
-	 next_space = 0;
-      }
-      else
-      {*/
-	 next_space = chord_line.find_first_of(' ', line_position);
-//      }
-      line_position = chord_line.find_first_not_of(' ', next_space);
-      std::cout << "++: next_space = " << next_space << endl;
-      std::cout << "++: line_position=" << line_position << endl;
-      return *this;
-   }
 
-   bool operator==(const ChordIterator& rhs)
-   {
-      std::cout << "==: chordline: " << chord_line << " " << rhs.chord_line << endl;
-      std::cout << "==: line_position: " << line_position << " " << rhs.line_position << endl;
-      if(this->chord_line == rhs.chord_line)
-	 std::cout << "==: chord_line equal" << std::endl;
-      if(this->line_position == rhs.line_position)
-	 std::cout << "==: line_postion equal" << std::endl;
-      return (this->chord_line == rhs.chord_line)
-	 && (this->line_position == rhs.line_position);
-   }
+std::transform(regex_it, regex_end, insert_iterator,
+		  match_to_chord);
 
-   bool operator!=(const ChordIterator& rhs)
-   {
-      return !(*this == rhs);
-   }
+return chords;
+}
 
-   value_type& operator*()
-   {
-      return current_chord;
-   }
-private:
-   std::string &chord_line;
-//   std::string::iterator line_position;
-   std::string::size_type line_position;
-   Chord current_chord;
-};
-
-string Transposer::transpose(const string &text, int halfsteps) const
+std::string build_chord_line(const std::vector<PositionedChord> chords)
 {
-   istringstream text_stream(text);
-   ostringstream transposed_stream;
-   string line;
-   for(int line_number = 0; !text_stream.eof(); ++line_number)
+   std::string chord_line;
+   auto chord_it = chords.begin();
+   for(std::string::difference_type pos = 0; chord_it != chords.end(); )
    {
-      getline(text_stream, line);
-      if(line_number % 2 == 0)
+      if(chord_it->position == pos)
       {
-	 // Chord line
-	 char prev_char = ' ';
-
-//måste kolla substräng. tex D eller C#
-	 
-	 for(size_t i = 0; i < line.length(); ++i)
-	 {
-	    char cur_char = line[i];
-	    if(prev_char == ' ' && cur_char != ' ')
-	    {
-	       cout << "FOUND: " << cur_char << endl;
-	    }
-	    prev_char = cur_char;
-	 }
+	 const std::string& str = chord_it->chord.str() + ' ';
+	 chord_line += str;
+	 pos += str.length();
+	 ++chord_it;
       }
+      else if(chord_it->position < pos)
+      {
+++chord_it;
+//++pos;
+}
       else
       {
-	 transposed_stream << line << endl;
+	 chord_line += ' ';
+	 ++pos;
       }
    }
-   return transposed_stream.str();
+
+   return chord_line;
 }
 
 int main(/*int argc, char** argv*/)
 {
-   string text{"C    Am    F    G\n"
-	 "I am a winner!"};
-   Transposer t;
-   string transposed = t.transpose(text, 2);
+   std::string text{"C    Am    F    G\n"
+                    "I am a winner!"};
+//   Transposer t;
+//   std::string transposed = t.transpose(text, 2);
 //   t.transpose(text, "D");
 
-   std::string chord_line{"C  Am   F#  D7 G#sus4"};
-   ChordIterator it{chord_line};
+   std::string chord_line{"Cm9 Am   F#  D7 G#sus4"};
 
-   auto it2(it);
+   std::vector<PositionedChord> chords = parse_chord_line(chord_line);
+   for(auto &chord : chords)
+   {
+      std::cout << chord.chord << "->";
+      std::cout << chord.chord.transpose(1) << std::endl;
+   }
 
-   std::string empty;
-   ChordIterator empty_it{empty};
-   ++empty_it;
-   if(empty_it == empty_it.end())
-   {
-      std::cout << "At end" << std::endl;
-   }
-   
-   for(auto &chord : it)
-   {
-      std::cout << "C: " << chord << std::endl;
-   }
-   
-   cout << text << endl;
-   cout << endl;
-   cout << transposed << endl;
+   std::cout << chord_line << std::endl;
+   std::cout << build_chord_line(chords) << std::endl;
+
 }
