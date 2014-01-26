@@ -25,9 +25,53 @@ TEST(Chord, GetRootFromFlatNote)
    EXPECT_EQ("Cb", chord.root());
 }
 
+TEST(Chord, TransposeZeroStepsNoQualities)
+{
+   Chord chord{"D"};
+   chord.transpose(0);
+   EXPECT_EQ("D", chord.str());
+}
+
 TEST(Chord, TransposeUpNoQualities)
 {
    Chord chord{"A"};
    chord.transpose(3);
    EXPECT_EQ("C", chord.str());
+}
+
+TEST(Chord, TransposeUpPastBoundaryNoQualities)
+{
+   Chord chord{"G#"};
+   chord.transpose(2);
+   EXPECT_EQ("A#", chord.str());
+}
+
+TEST(Chord, TransposeUpLargeValueNoQualities)
+{
+   // Was going to use int max, but it is plaftform dependent
+   Chord chord{"A"};
+   chord.transpose(1000);
+   EXPECT_EQ("C#", chord.str());
+}
+
+TEST(Chord, TransposeDownNoQualities)
+{
+   Chord chord{"F"};
+   chord.transpose(-2);
+   EXPECT_EQ("D#", chord.str());
+}
+
+TEST(Chord, TransposeDownPastBoundaryNoQualities)
+{
+   Chord chord{"B"};
+   chord.transpose(-5);
+   EXPECT_EQ("F#", chord.str());
+}
+
+TEST(Chord, TransposeDownLargeValueNoQualities)
+{
+   // Was going to use int min, but it is plaftform dependent
+   Chord chord{"A"};
+   chord.transpose(-1000);
+   EXPECT_EQ("F", chord.str());
 }

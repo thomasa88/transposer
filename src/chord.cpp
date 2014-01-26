@@ -1,5 +1,7 @@
-#include <vector>
 #include <algorithm>
+#include <cassert>
+#include <limits>
+#include <vector>
 #include "chord.h"
 
 static const std::vector<std::string> notes = {"A", "A#", "B", "C", "C#", "D",
@@ -35,10 +37,17 @@ const std::string &Chord::root() const
 {
    return m_root;
 }
-
+#include <iostream>
 void Chord::transpose(const int half_steps)
 {
-   auto root_pos = std::find(notes.begin(), notes.end(), m_root);
-   auto new_root_pos = (root_pos - notes.begin()) + half_steps;
+   auto root_pos_it = std::find(notes.begin(), notes.end(), m_root);
+   auto root_pos = root_pos_it - notes.begin();
+   int notes_size_signed = notes.size();
+   int new_root_pos = (root_pos + half_steps) % notes_size_signed;
+   assert(notes.size() < std::numeric_limits<decltype(new_root_pos)>::max());
+   if(new_root_pos < 0)
+   {
+      new_root_pos += notes.size();
+   }
    m_root = notes[new_root_pos];
 }
