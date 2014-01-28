@@ -25,50 +25,50 @@ TEST(Chord, GetRootFromFlatNote)
    EXPECT_EQ("Cb", chord.root());
 }
 
-TEST(Chord, TransposeZeroStepsNoQualities)
+TEST(Chord, TransposeZeroSteps)
 {
-   Chord chord{"D"};
+   Chord chord{"D7"};
    chord.transpose(0);
-   EXPECT_EQ("D", chord.str());
+   EXPECT_EQ("D7", chord.str());
 }
 
-TEST(Chord, TransposeUpNoQualities)
+TEST(Chord, TransposeUp)
 {
-   Chord chord{"A"};
+   Chord chord{"Asus4"};
    chord.transpose(3);
-   EXPECT_EQ("C", chord.str());
+   EXPECT_EQ("Csus4", chord.str());
 }
 
-TEST(Chord, TransposeUpPastBoundaryNoQualities)
+TEST(Chord, TransposeUpPastBoundary)
 {
-   Chord chord{"G#"};
+   Chord chord{"G#5"};
    chord.transpose(2);
-   EXPECT_EQ("A#", chord.str());
+   EXPECT_EQ("A#5", chord.str());
 }
 
-TEST(Chord, TransposeUpLargeValueNoQualities)
+TEST(Chord, TransposeUpLargeValue)
 {
    // Was going to use int max, but it is plaftform dependent
-   Chord chord{"A"};
+   Chord chord{"Asus2"};
    chord.transpose(1000);
-   EXPECT_EQ("C#", chord.str());
+   EXPECT_EQ("C#sus2", chord.str());
 }
 
-TEST(Chord, TransposeDownNoQualities)
+TEST(Chord, TransposeDown)
 {
-   Chord chord{"F"};
+   Chord chord{"FMaj7"};
    chord.transpose(-2);
-   EXPECT_EQ("D#", chord.str());
+   EXPECT_EQ("D#Maj7", chord.str());
 }
 
-TEST(Chord, TransposeDownPastBoundaryNoQualities)
+TEST(Chord, TransposeDownPastBoundary)
 {
    Chord chord{"B"};
    chord.transpose(-5);
    EXPECT_EQ("F#", chord.str());
 }
 
-TEST(Chord, TransposeDownLargeValueNoQualities)
+TEST(Chord, TransposeDownLargeValue)
 {
    // Was going to use int min, but it is plaftform dependent
    Chord chord{"A"};
