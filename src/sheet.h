@@ -38,6 +38,12 @@ private:
 
 class ChordLine : public Line
 {
+public:
+   ChordLine(const std::string &ascii);
+   std::string str() const override;
+   const std::vector<Chord> &chords() const;
+private:
+   std::vector<Chord> m_chords;
 };
 
 class NotatedLine : public Line
