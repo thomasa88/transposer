@@ -2,6 +2,7 @@
 #include "sheet.h"
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 TEST(LyricsLineTest, FromAscii)
@@ -22,7 +23,8 @@ TEST(ChordLineTest, FromValidAsciiPopulatesVector)
    EXPECT_EQ("F#", chords[2].str());
 }
 
-TEST(ChordLineTest, FromInvalidAscii)
+TEST(ChordLineTest, FromAsciiWithInvalidChordRootsThrowsException)
 {
-
+   std::string invalid_string{"D thing C"};
+   EXPECT_THROW(ChordLine{invalid_string}, std::invalid_argument);
 }

@@ -1,16 +1,32 @@
 #include <algorithm>
 #include <cassert>
 #include <limits>
+#include <stdexcept>
 #include <vector>
 #include "chord.h"
 
-static const std::vector<std::string> notes = {"A", "A#", "B", "C", "C#", "D",
-					       "D#", "E", "F", "F#", "G", "G#"};
+static const std::vector<std::string>
+notes{"A", "A#", "B", "C", "C#", "D",
+	 "D#", "E", "F", "F#", "G", "G#"};
+
+static const std::vector<std::string>
+flat_notes{"Ab", "A", "Bb", "Cb", "C", "Db",
+	      "D", "Eb", "Fb", "F", "Gb", "G"};
+
+bool valid_root(const std::string &root)
+{
+   return find(notes.begin(), notes.end(), root) != notes.end() ||
+      find(flat_notes.begin(), flat_notes.end(), root) != flat_notes.end();
+}
 
 Chord::Chord(const std::string& chord_string)
 {
    auto root_length = find_root_length(chord_string);
    m_root = chord_string.substr(0, root_length);
+   if(!valid_root(m_root))
+   {
+      throw std::invalid_argument{"Invalid chord root: " + m_root};
+   }
    m_quality = chord_string.substr(root_length);
 }
 
