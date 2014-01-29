@@ -1,10 +1,38 @@
 #include <iterator>
 #include <stdexcept>
+#include <sstream>
+#include <string>
 //gcc 4.8 does not support c++11 regex
 //#include <regex>
 #include <boost/regex.hpp>
 
 #include "sheet.h"
+
+Sheet Sheet::from_ascii(const std::string &ascii)
+{
+   return Sheet{ascii};
+}
+
+Sheet::Sheet(const std::string &ascii)
+{
+   std::istringstream stream{ascii};
+   std::string line_string;
+   while(std::getline(stream, line_string))
+   {
+      m_lines.push_back(Line::from_ascii(line_string));
+   }
+}
+
+std::string Sheet::str() const
+{
+   std::ostringstream stream;
+   for(const auto &line : m_lines)
+   {
+      stream << line->str() << '\n';
+   }
+   return stream.str();
+}
+
 
 std::unique_ptr<Line> Line::from_ascii(const std::string &ascii)
 {

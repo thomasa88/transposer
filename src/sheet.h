@@ -13,10 +13,10 @@ class Sheet
 public:
    static Sheet from_ascii(const std::string &ascii);
 //   Sheet &from_ascii(const std::ostream &ascii);
-   const std::string &str() const;
+   std::string str() const;
 private:
-   void parse(const std::string &ascii);
-   std::vector<Line> m_lines;
+   Sheet(const std::string &ascii);
+   std::vector<std::unique_ptr<Line>> m_lines;
 };
 
 class Line

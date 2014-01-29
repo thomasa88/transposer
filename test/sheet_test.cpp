@@ -51,3 +51,20 @@ TEST(Line, FromAsciiChordStringReturnsChordLine)
    EXPECT_TRUE(dynamic_cast<ChordLine *>(line.get()));
    EXPECT_EQ(chord_string, line->str());
 }
+
+TEST(SheetTest, EmptySheetBuildsEmptyString)
+{
+   Sheet sheet = Sheet::from_ascii("");
+   EXPECT_EQ("", sheet.str());
+}
+
+TEST(SheetTest, SheetFromAsciiBuildsCorrectString)
+{
+   std::string song{"C     Am F#   G7\n"
+	 "Going a  long way,\n"
+	 "\n"
+	 "   D F# G#      D7\n"
+	 "On a ve-ry long journey.\n"};
+   Sheet sheet = Sheet::from_ascii(song);
+   EXPECT_EQ(song, sheet.str());
+}
