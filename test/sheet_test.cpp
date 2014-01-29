@@ -28,3 +28,26 @@ TEST(ChordLineTest, FromAsciiWithInvalidChordRootsThrowsException)
    std::string invalid_string{"D thing C"};
    EXPECT_THROW(ChordLine{invalid_string}, std::invalid_argument);
 }
+
+TEST(ChordLineTest, ToStringReturnsInput)
+{
+   std::string chord_string(" C7 Dsus2   G");
+   auto line = ChordLine{chord_string};
+   EXPECT_EQ(chord_string, line.str());
+}
+
+TEST(Line, FromAsciiLyricsStringReturnsLyricsLine)
+{
+   std::string lyrics{"One two three."};
+   auto line = Line::from_ascii(lyrics);
+   EXPECT_TRUE(dynamic_cast<LyricsLine *>(line.get()));
+   EXPECT_EQ(lyrics, line->str());
+}
+
+TEST(Line, FromAsciiChordStringReturnsChordLine)
+{
+   std::string chord_string{"A B C"};
+   auto line = Line::from_ascii(chord_string);
+   EXPECT_TRUE(dynamic_cast<ChordLine *>(line.get()));
+   EXPECT_EQ(chord_string, line->str());
+}

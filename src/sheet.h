@@ -11,7 +11,7 @@ class Line;
 class Sheet
 {
 public:
-   static Sheet &from_ascii(const std::string &ascii);
+   static Sheet from_ascii(const std::string &ascii);
 //   Sheet &from_ascii(const std::ostream &ascii);
    const std::string &str() const;
 private:
@@ -30,7 +30,7 @@ public:
 class LyricsLine : public Line
 {
 public:
-   LyricsLine(const std::string &ascii);
+   explicit LyricsLine(const std::string &ascii);
    std::string str() const override;
 private:
    std::string m_lyrics;
@@ -39,11 +39,12 @@ private:
 class ChordLine : public Line
 {
 public:
-   ChordLine(const std::string &ascii);
+   explicit ChordLine(const std::string &ascii);
    std::string str() const override;
    const std::vector<Chord> &chords() const;
 private:
    std::vector<Chord> m_chords;
+   std::vector<size_t> m_positions;
 };
 
 class NotatedLine : public Line

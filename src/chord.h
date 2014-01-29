@@ -6,7 +6,7 @@
 class Chord
 {
 public:
-   Chord(const std::string &chord_string);
+   explicit Chord(const std::string &chord_string);
    std::string str() const;
    const std::string &root() const;
    void transpose(const int half_steps);
