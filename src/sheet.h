@@ -23,7 +23,11 @@ std::string sheet_to_ascii(const Sheet &sheet);
 class Line
 {
 public:
+   using value_type = LinePart;
    Line &operator+=(const LinePart &rhs);
+   const std::vector<LinePart> &parts() const;
+private:
+   std::vector<LinePart> m_parts;
 };
 
 class LinePart
@@ -36,5 +40,7 @@ private:
    Chord m_chord;
    lyrics_t m_lyrics;
 };
+
+bool operator==(const LinePart &lhs, const LinePart &rhs);
 
 #endif
