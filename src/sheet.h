@@ -6,50 +6,35 @@
 #include <vector>
 #include "chord.h"
 
+typedef std::string lyrics_t;
+
 class Line;
+class LinePart;
 
 class Sheet
 {
 public:
-   static Sheet from_ascii(const std::string &ascii);
-//   Sheet &from_ascii(const std::ostream &ascii);
-   std::string str() const;
 private:
-   Sheet(const std::string &ascii);
-   std::vector<std::unique_ptr<Line>> m_lines;
 };
+
+Sheet sheet_from_ascii(const std::string &ascii);
+std::string sheet_to_ascii(const Sheet &sheet);
 
 class Line
 {
 public:
-   virtual ~Line() { /* vtable */ };
-   static std::unique_ptr<Line> from_ascii(const std::string &ascii);
-   virtual std::string str() const = 0;
+   Line &operator+=(const LinePart &rhs);
 };
 
-class LyricsLine : public Line
+class LinePart
 {
 public:
-   explicit LyricsLine(const std::string &ascii);
-   std::string str() const override;
+   explicit LinePart(const Chord &chord, const lyrics_t lyrics);
+   const Chord &chord() const;
+   const lyrics_t &lyrics() const;
 private:
-   std::string m_lyrics;
-};
-
-class ChordLine : public Line
-{
-public:
-   explicit ChordLine(const std::string &ascii);
-   std::string str() const override;
-   const std::vector<Chord> &chords() const;
-private:
-   std::vector<Chord> m_chords;
-   std::vector<size_t> m_positions;
-};
-
-class NotatedLine : public Line
-{
-   //lyricsline, positioned chords?
+   Chord m_chord;
+   lyrics_t m_lyrics;
 };
 
 #endif
