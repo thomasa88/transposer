@@ -59,3 +59,44 @@ TEST(LineTest, ShouldStorePartsInOrder)
    }
    EXPECT_EQ(parts, line.parts());
 }
+
+TEST(LineTest, EqualShouldReturnTrueForEqualLines)
+{
+   Line line;
+   auto line_copy = line;
+   EXPECT_TRUE(line == line_copy);
+
+   line += LinePart{Chord{"D7"}, lyrics_t{"text"}};
+   line_copy = line;
+   EXPECT_TRUE(line == line_copy);
+}
+
+TEST(LineTest, EqualShouldReturnFalseForNonEqualLines)
+{
+   auto part1 = LinePart{Chord{"A"}, lyrics_t{}};
+   auto part2 = LinePart{Chord{}, lyrics_t{}};
+   Line line1;
+   line1 += part1;
+   Line line2;
+   line2 += part2;
+   EXPECT_FALSE(line1 == line2);
+}
+
+TEST(SheetTest, ShouldStoreLine)
+{
+   Sheet sheet;
+   Line line;
+   sheet.add_line(line);
+   ASSERT_EQ(1, sheet.lines().size());
+   EXPECT_EQ(line, sheet.lines()[0]);
+}
+
+TEST(SheetTest, ShouldStoreLinesInOrder)
+{
+   Sheet sheet;
+   std::vector<Line> lines(2);
+   lines[1] += LinePart{Chord{}, lyrics_t{}};
+   sheet.add_line(lines[0]);
+   sheet.add_line(lines[1]);
+   EXPECT_EQ(lines, sheet.lines());
+}

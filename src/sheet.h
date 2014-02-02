@@ -14,11 +14,11 @@ class LinePart;
 class Sheet
 {
 public:
+   Sheet &add_line(const Line &line);
+   const std::vector<Line> &lines() const;
 private:
+   std::vector<Line> m_lines;
 };
-
-Sheet sheet_from_ascii(const std::string &ascii);
-std::string sheet_to_ascii(const Sheet &sheet);
 
 class Line
 {
@@ -40,6 +40,11 @@ private:
    Chord m_chord;
    lyrics_t m_lyrics;
 };
+
+Sheet sheet_from_ascii(const std::string &ascii);
+std::string sheet_to_ascii(const Sheet &sheet);
+
+bool operator==(const Line &lhs, const Line &rhs);
 
 bool operator==(const LinePart &lhs, const LinePart &rhs);
 

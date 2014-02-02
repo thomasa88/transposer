@@ -8,6 +8,17 @@
 
 #include "sheet.h"
 
+Sheet &Sheet::add_line(const Line &line)
+{
+   m_lines.push_back(line);
+   return *this;
+}
+
+const std::vector<Line> &Sheet::lines() const
+{
+   return m_lines;
+}
+
 // std::string Sheet::str() const
 // {
 //    std::ostringstream stream;
@@ -27,6 +38,11 @@ Line &Line::operator+=(const LinePart &rhs)
 const std::vector<LinePart> &Line::parts() const
 {
    return m_parts;
+}
+
+bool operator==(const Line &lhs, const Line &rhs)
+{
+   return lhs.parts() == rhs.parts();
 }
 
 
