@@ -10,6 +10,7 @@ public:
    std::string str() const;
    const std::string &root() const;
    void transpose(const int half_steps);
+   bool operator==(const Chord &other) const;
 private:
    std::string::size_type find_root_length(const std::string &chord_string) const;
    std::string m_quality;

@@ -53,7 +53,7 @@ const std::string &Chord::root() const
 {
    return m_root;
 }
-#include <iostream>
+
 void Chord::transpose(const int half_steps)
 {
    auto root_pos_it = std::find(notes.begin(), notes.end(), m_root);
@@ -66,4 +66,9 @@ void Chord::transpose(const int half_steps)
       new_root_pos += notes.size();
    }
    m_root = notes[new_root_pos];
+}
+
+bool Chord::operator==(const Chord &other) const
+{
+   return other.m_root == m_root && other.m_quality == m_quality;
 }
