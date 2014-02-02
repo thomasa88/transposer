@@ -86,6 +86,7 @@ TEST(ChordTest, EqualShouldReturnTrueForEqualChords)
    EXPECT_TRUE(Chord{"A"} == Chord{"A"});
    EXPECT_TRUE(Chord{"D7"} == Chord{"D7"});
    EXPECT_TRUE(Chord{"G#sus4"} == Chord{"G#sus4"});
+   EXPECT_TRUE(Chord{} == Chord{});
 }
 
 TEST(ChordTest, EqualShouldReturnFalseForNonEqualChords)
@@ -93,4 +94,18 @@ TEST(ChordTest, EqualShouldReturnFalseForNonEqualChords)
    EXPECT_FALSE(Chord{"A"} == Chord{"B"});
    EXPECT_FALSE(Chord{"D7"} == Chord{"D#7"});
    EXPECT_FALSE(Chord{"G#"} == Chord{"G#sus4"});
+   EXPECT_FALSE(Chord{"A"} == Chord{});
+}
+
+TEST(ChordTest, ShouldNotHaveChordIfConstructedWithoutArguments)
+{
+   Chord chord;
+   EXPECT_FALSE(chord.has_chord());
+   // Do we want explicit N.C. str()? Could mess up starts of lines.
+}
+
+TEST(ChordTest, ShouldHaveChordIfConstructedWithArguments)
+{
+   Chord chord{"A"};
+   EXPECT_TRUE(chord.has_chord());
 }

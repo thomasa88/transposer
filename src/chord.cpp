@@ -30,6 +30,10 @@ Chord::Chord(const std::string& chord_string)
    m_quality = chord_string.substr(root_length);
 }
 
+Chord::Chord()
+{
+}
+
 std::string::size_type Chord::find_root_length(const std::string &chord_string) const
 {
    std::string::size_type root_length = 1;
@@ -71,4 +75,9 @@ void Chord::transpose(const int half_steps)
 bool Chord::operator==(const Chord &other) const
 {
    return other.m_root == m_root && other.m_quality == m_quality;
+}
+
+bool Chord::has_chord() const
+{
+   return m_root.length() > 0;
 }
