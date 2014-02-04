@@ -41,9 +41,6 @@ private:
    lyrics_t m_lyrics;
 };
 
-Sheet sheet_from_ascii(const std::string &ascii);
-std::string sheet_to_ascii(const Sheet &sheet);
-
 bool operator==(const Line &lhs, const Line &rhs);
 
 bool operator==(const LinePart &lhs, const LinePart &rhs);
