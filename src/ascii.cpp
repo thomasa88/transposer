@@ -7,81 +7,101 @@
 #include "ascii.h"
 #include "chord.h"
 
-Sheet sheet_from_ascii(const std::string &ascii)
+Sheet AsciiParser::parse(const std::string &ascii)
 {
-   Sheet sheet;
    std::istringstream stream{ascii};
    std::string ascii_line;
-   std::vector<Chord> chord_buffer;
-   std::vector<size_t> position_buffer;
+
    while(getline(stream, ascii_line))
    {
-      Line line;
-
       try
       {
-	 boost::regex chord_pattern(R"(\S+)");
-	 boost::sregex_iterator chord_it_begin{ascii_line.begin(), ascii_line.end(), chord_pattern};
-	 boost::sregex_iterator chord_it_end{};
-	 std::vector<Chord> chords;
-	 std::vector<size_t> positions;
-	 for(auto chord_it = chord_it_begin; chord_it != chord_it_end; ++chord_it)
-	 {
-	    const auto &match = *chord_it;
-//	    std::cout << "chord: " << match.str() << std::endl;
-	    chords.push_back(Chord{match.str()});
-	    positions.push_back(match.position());
-	 }
-
-	 if(chord_buffer.size() != 0)
-	 {
-	    for(auto &chord : chord_buffer)
-	    {
-	       LinePart part{std::move(chord), lyrics_t{}};
-	       line += part;
-	    }
-	    sheet.add_line(line);
-	 }
-	 chord_buffer = std::move(chords);
-	 position_buffer = std::move(positions);
-//	 chords = std::vector<Chord>{};
+	 parse_chord_line(ascii_line);
+	 append_chord_buffer_to_sheet();
+	 parsed_chords_to_buffer();
       }
-      catch(std::invalid_argument)
+      catch(not_chord_line)
       {
-	 line = Line{};
-	 
-	 if(chord_buffer.size() != 0)
+	 if(has_chords_in_buffer())
 	 {
-	    position_buffer.push_back(std::string::npos);
-	    auto chord_it = chord_buffer.begin();
-	    auto position_it = position_buffer.begin();
-	    size_t position = *position_it;
-	    size_t next_position = *(++position_it);
-	    for(; chord_it != chord_buffer.end(); ++chord_it)
-	    {
-	       line += LinePart{*chord_it, ascii_line.substr(position, next_position - position)};
-	       position = next_position;
-	       next_position = *(++position_it);
-	    }
-	    chord_buffer.clear();
+	    append_lyrics_with_chords_to_sheet(ascii_line);
 	 }
 	 else
 	 {
-	    line += LinePart{Chord{}, ascii_line};
+	    append_lone_lyrics_line_to_sheet(ascii_line);
 	 }
-	 sheet.add_line(line);
       }
    }
-   if(chord_buffer.size() != 0)
+   append_chord_buffer_to_sheet();
+
+   return m_sheet;
+}
+
+void AsciiParser::append_chord_buffer_to_sheet()
+{
+   if(has_chords_in_buffer())
    {
       Line line;
-      for(auto &chord : chord_buffer)
+      for(auto &chord : m_chord_buffer)
       {
 	 LinePart part{std::move(chord), lyrics_t{}};
 	 line += part;
       }
-      sheet.add_line(line);
+      m_sheet.add_line(line);
    }
-   
-   return sheet;
+}
+
+bool AsciiParser::has_chords_in_buffer()
+{
+   return m_chord_buffer.size() != 0;
+}
+
+void AsciiParser::parse_chord_line(const std::string &ascii_line)
+{
+   boost::regex chord_pattern(R"(\S+)");
+   boost::sregex_iterator chord_it_begin{ascii_line.begin(), ascii_line.end(), chord_pattern};
+   boost::sregex_iterator chord_it_end{};
+   for(auto chord_it = chord_it_begin; chord_it != chord_it_end; ++chord_it)
+   {
+      const auto &match = *chord_it;
+      try
+      {
+	 m_parsed_line_chords.push_back(Chord{match.str()});
+      }
+      catch(std::invalid_argument)
+      {
+	 throw not_chord_line{};
+      }
+      m_parsed_line_positions.push_back(match.position());
+   }
+}
+
+void AsciiParser::parsed_chords_to_buffer()
+{
+   m_chord_buffer = std::move(m_parsed_line_chords);
+   m_position_buffer = std::move(m_parsed_line_positions);
+}
+
+void AsciiParser::append_lyrics_with_chords_to_sheet(const std::string &ascii_line)
+{
+   Line line;
+   m_position_buffer.push_back(std::string::npos);
+   auto position_it = m_position_buffer.begin();
+   size_t position = *position_it;
+   size_t next_position = *(++position_it);
+   for(const Chord &chord : m_chord_buffer)
+   {
+      line += LinePart{chord, ascii_line.substr(position, next_position - position)};
+      position = next_position;
+      next_position = *(++position_it);
+   }
+   m_sheet.add_line(line);
+   m_chord_buffer.clear();
+}
+
+void AsciiParser::append_lone_lyrics_line_to_sheet(const std::string &ascii_line)
+{
+   Line line;
+   line += LinePart{Chord{}, ascii_line};
+   m_sheet.add_line(line);
 }

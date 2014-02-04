@@ -1,20 +1,30 @@
 #include "gtest/gtest.h"
 #include "ascii.h"
 
-TEST(SheetAsciiTest, LyricsOnlyLineAddedToSheet)
+class AsciiParserTest : public ::testing::Test
+{
+protected:
+   virtual void SetUp()
+   {
+      
+   }
+   AsciiParser m_parser;
+};
+
+TEST_F(AsciiParserTest, LyricsOnlyLineAddedToSheet)
 {
    std::string ascii = "Some lyrics";
-   Sheet sheet = sheet_from_ascii(ascii);
+   Sheet sheet = m_parser.parse(ascii);
 
    // Very internal..
    ASSERT_EQ(1, sheet.lines().size());
    EXPECT_EQ(ascii, sheet.lines()[0].parts()[0].lyrics());
 }
 
-TEST(SheetAsciiTest, MultipleLyricsOnlyLinesAddedToSheet)
+TEST_F(AsciiParserTest, MultipleLyricsOnlyLinesAddedToSheet)
 {
    std::string ascii = "Line 1\nLine 2\nLine 3";
-   Sheet sheet = sheet_from_ascii(ascii);
+   Sheet sheet = m_parser.parse(ascii);
 
    // Very internal..
    ASSERT_EQ(3, sheet.lines().size());
@@ -23,10 +33,10 @@ TEST(SheetAsciiTest, MultipleLyricsOnlyLinesAddedToSheet)
    EXPECT_EQ("Line 3", sheet.lines()[2].parts()[0].lyrics());
 }
 
-TEST(SheetAsciiTest, ChordsOnlyLineAddedToSheet)
+TEST_F(AsciiParserTest, ChordsOnlyLineAddedToSheet)
 {
    std::string ascii = "A   C#   G7";
-   Sheet sheet = sheet_from_ascii(ascii);
+   Sheet sheet = m_parser.parse(ascii);
 
    // Very internal..
    ASSERT_EQ(1, sheet.lines().size());
@@ -35,10 +45,10 @@ TEST(SheetAsciiTest, ChordsOnlyLineAddedToSheet)
    EXPECT_EQ("G7", sheet.lines()[0].parts()[2].chord().str());
 }
 
-TEST(SheetAsciiTest, MultipleChordsOnlyLinesAddedToSheet)
+TEST_F(AsciiParserTest, MultipleChordsOnlyLinesAddedToSheet)
 {
    std::string ascii = "A   C#   G7\n  B E";
-   Sheet sheet = sheet_from_ascii(ascii);
+   Sheet sheet = m_parser.parse(ascii);
 
    // Very internal..
    ASSERT_EQ(2, sheet.lines().size());
@@ -51,12 +61,12 @@ TEST(SheetAsciiTest, MultipleChordsOnlyLinesAddedToSheet)
    EXPECT_EQ("E", sheet.lines()[1].parts()[1].chord().str());
 }
 
-TEST(SheetAsciiTest, ChordAndLyricsLineAddedToSheet)
+TEST_F(AsciiParserTest, ChordAndLyricsLineAddedToSheet)
 {
    std::string ascii =
       "A    B\n"
       "Sing song";
-   Sheet sheet = sheet_from_ascii(ascii);
+   Sheet sheet = m_parser.parse(ascii);
 
    ASSERT_EQ(1, sheet.lines().size());
    EXPECT_EQ("A", sheet.lines()[0].parts()[0].chord().str());
