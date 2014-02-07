@@ -66,7 +66,7 @@ void AsciiParser::parse_chord_line(const std::string &ascii_line)
       const auto &match = *chord_it;
       try
       {
-	 m_parsed_line_chords.push_back(Chord{match.str()});
+	 m_parsed_line_chords.emplace_back(match.str());
       }
       catch(std::invalid_argument)
       {
