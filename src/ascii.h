@@ -10,9 +10,11 @@ public:
    Sheet parse(const std::string &ascii);
 private:
    class not_chord_line {};
-   void append_chord_buffer_to_sheet();
+   void handle_nonempty_line(const std::string &ascii_line);
    void parse_chord_line(const std::string &ascii_line);
    void parsed_chords_to_buffer();
+   void append_empty_line_to_sheet();
+   void append_chord_buffer_to_sheet();
    void append_lyrics_with_chords_to_sheet(const std::string &ascii_line);
    void append_lone_lyrics_line_to_sheet(std::string ascii_line);
    bool has_chords_in_buffer() const;

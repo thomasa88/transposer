@@ -14,30 +14,54 @@ Sheet AsciiParser::parse(const std::string &ascii)
 {
    std::istringstream stream{ascii};
    std::string ascii_line;
+   bool prev_line_empty = true;
 
    while(getline(stream, ascii_line))
    {
-      try
+      if(ascii_line.empty())
       {
-	 parse_chord_line(ascii_line);
 	 append_chord_buffer_to_sheet();
-	 parsed_chords_to_buffer();
+	 prev_line_empty = true;
       }
-      catch(not_chord_line)
+      else
       {
-	 if(has_chords_in_buffer())
+	 if(prev_line_empty && !m_sheet.empty())
 	 {
-	    append_lyrics_with_chords_to_sheet(ascii_line);
+	    append_empty_line_to_sheet();
 	 }
-	 else
-	 {
-	    append_lone_lyrics_line_to_sheet(ascii_line);
-	 }
+	 handle_nonempty_line(ascii_line);
+	 prev_line_empty = false;
       }
    }
    append_chord_buffer_to_sheet();
 
    return m_sheet;
+}
+
+void AsciiParser::append_empty_line_to_sheet()
+{
+   m_sheet.add_line({});
+}
+
+void AsciiParser::handle_nonempty_line(const std::string &ascii_line)
+{
+   try
+   {
+      parse_chord_line(ascii_line);
+      append_chord_buffer_to_sheet();
+      parsed_chords_to_buffer();
+   }
+   catch(not_chord_line)
+   {
+      if(has_chords_in_buffer())
+      {
+	 append_lyrics_with_chords_to_sheet(ascii_line);
+      }
+      else
+      {
+	 append_lone_lyrics_line_to_sheet(ascii_line);
+      }
+   }
 }
 
 void AsciiParser::append_chord_buffer_to_sheet()
@@ -50,6 +74,7 @@ void AsciiParser::append_chord_buffer_to_sheet()
 	 LinePart part{std::move(chord)};
 	 line += part;
       }
+      m_chord_buffer.clear();
       m_sheet.add_line(line);
    }
 }
@@ -61,6 +86,11 @@ bool AsciiParser::has_chords_in_buffer() const
 
 void AsciiParser::parse_chord_line(const std::string &ascii_line)
 {
+   if(ascii_line.empty())
+   {
+      throw not_chord_line{};
+   }
+
    boost::regex chord_pattern(R"(\S+)");
    boost::sregex_iterator chord_it_begin{ascii_line.begin(), ascii_line.end(), chord_pattern};
    boost::sregex_iterator chord_it_end{};
