@@ -44,7 +44,7 @@ void AsciiParser::append_chord_buffer_to_sheet()
       Line line;
       for(auto &chord : m_chord_buffer)
       {
-	 LinePart part{std::move(chord), lyrics_t{}};
+	 LinePart part{std::move(chord)};
 	 line += part;
       }
       m_sheet.add_line(line);
@@ -102,6 +102,6 @@ void AsciiParser::append_lyrics_with_chords_to_sheet(const std::string &ascii_li
 void AsciiParser::append_lone_lyrics_line_to_sheet(const std::string &ascii_line)
 {
    Line line;
-   line += LinePart{Chord{}, ascii_line};
+   line += LinePart{ascii_line};
    m_sheet.add_line(line);
 }

@@ -52,8 +52,18 @@ bool operator==(const Line &lhs, const Line &rhs)
 }
 
 
-LinePart::LinePart(const Chord &chord, const lyrics_t lyrics) :
+LinePart::LinePart(const Chord &chord, const lyrics_t &lyrics) :
    m_chord(chord), m_lyrics(lyrics)
+{
+}
+
+LinePart::LinePart(const Chord &chord) :
+   m_chord(chord)
+{
+}
+
+LinePart::LinePart(const lyrics_t &lyrics) :
+   m_lyrics(lyrics)
 {
 }
 

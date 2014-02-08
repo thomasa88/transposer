@@ -36,7 +36,9 @@ private:
 class LinePart
 {
 public:
-   explicit LinePart(const Chord &chord, const lyrics_t lyrics);
+   explicit LinePart(const Chord &chord, const lyrics_t &lyrics);
+   explicit LinePart(const Chord &chord);
+   explicit LinePart(const lyrics_t &lyrics);
    const Chord &chord() const;
    const lyrics_t &lyrics() const;
 private:

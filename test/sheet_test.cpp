@@ -8,15 +8,21 @@
 TEST(LinePartTest, ShouldInitializeChordCorrectly)
 {
    Chord chord{"A7"};
-   LinePart part{chord, lyrics_t{}};
-   EXPECT_EQ(chord, part.chord());
+   LinePart part1{chord, lyrics_t{}};
+   EXPECT_EQ(chord, part1.chord());
+
+   LinePart part2{chord};
+   EXPECT_EQ(chord, part2.chord());
 }
 
 TEST(LinePartTest, ShouldInitializeLyricsCorrectly)
 {
    lyrics_t lyrics{"One two"};
-   LinePart part{Chord{}, lyrics};
-   EXPECT_EQ(lyrics, part.lyrics());
+   LinePart part1{Chord{}, lyrics};
+   EXPECT_EQ(lyrics, part1.lyrics());
+
+   LinePart part2{lyrics};
+   EXPECT_EQ(lyrics, part2.lyrics());
 }
 
 TEST(LinePartTest, EqualShouldReturnTrueForEqualLineParts)
