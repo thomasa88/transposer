@@ -43,6 +43,21 @@ TEST(LinePartTest, EqualShouldReturnFalseForNonEqualLineParts)
    EXPECT_FALSE(part1 == part2);
 }
 
+TEST(LinePartTest, ShouldOutputRepresentationToStream)
+{
+   auto part1 = LinePart{Chord{"A"}, lyrics_t{}};
+   auto part2 = LinePart{Chord{}, lyrics_t{}};
+   std::ostringstream stream1, stream2, expect_stream1, expect_stream2;
+   stream1 << part1;
+   stream2 << part2;
+
+   expect_stream1 << "LinePart{chord=" << Chord{"A"} << ", lyrics=" << lyrics_t{} << "}";
+   expect_stream2 << "LinePart{chord=" << Chord{} << ", lyrics=" << lyrics_t{} << "}";
+
+   EXPECT_EQ(expect_stream1.str(), stream1.str());
+   EXPECT_EQ(expect_stream2.str(), stream2.str());
+}
+
 TEST(LineTest, ShouldStorePart)
 {
    LinePart part{Chord{}, lyrics_t{}};
@@ -58,7 +73,6 @@ TEST(LineTest, ShouldStorePartsInOrder)
    std::vector<LinePart> parts{LinePart{Chord{}, "Sing"},
 				  LinePart{Chord{"B"}, "a song"},
 				  LinePart{Chord{"C"}, "long"}};
-//   std::for_each(parts.begin(), parts.end(), std::back_inserter(line));
    for(auto &part : parts)
    {
       line += part;
@@ -98,6 +112,30 @@ TEST(LineTest, shouldAddInitializerListMembers)
    EXPECT_EQ(part2, line.parts()[1]);
 }
 
+TEST(LineTest, ShouldOutputRepresentationToStreamWhenNonEmpty)
+{
+   auto part1 = LinePart{Chord{"A"}, lyrics_t{}};
+   auto part2 = LinePart{Chord{}, lyrics_t{"text"}};
+   Line line{part1, part2};
+
+   std::ostringstream stream, expect_stream;
+   stream << line;
+   expect_stream << "Line{" << part1 << ", " << part2 << "}";
+
+   EXPECT_EQ(expect_stream.str(), stream.str());
+}
+
+TEST(LineTest, ShouldOutputRepresentationToStreamWhenEmpty)
+{
+   Line line;
+
+   std::ostringstream stream;
+   stream << line;
+
+   EXPECT_EQ("Line{}", stream.str());
+}
+
+
 TEST(SheetTest, ShouldStoreLine)
 {
    Sheet sheet;
@@ -116,3 +154,29 @@ TEST(SheetTest, ShouldStoreLinesInOrder)
    sheet.add_line(lines[1]);
    EXPECT_EQ(lines, sheet.lines());
 }
+
+TEST(SheetTest, ShouldOutputRepresentationToStreamWhenNonEmpty)
+{
+   Sheet sheet;
+   Line line1;
+   Line line2{LinePart{Chord{}, lyrics_t{"text"}}};
+   sheet.add_line(line1);
+   sheet.add_line(line2);
+
+   std::ostringstream stream, expect_stream;
+   stream << sheet;
+   expect_stream << "Sheet{" << line1 << ", " << line2 << "}";
+
+   EXPECT_EQ(expect_stream.str(), stream.str());
+}
+
+TEST(SheetTest, ShouldOutputRepresentationToStreamWhenEmpty)
+{
+   Sheet sheet;
+
+   std::ostringstream stream;
+   stream << sheet;
+
+   EXPECT_EQ("Sheet{}", stream.str());
+}
+

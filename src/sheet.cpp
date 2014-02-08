@@ -1,9 +1,13 @@
+#include <algorithm>
 #include <iterator>
 #include <stdexcept>
 #include <sstream>
 #include <string>
 
 #include "sheet.h"
+
+template<typename Container>
+void stream_join(std::ostream& os, const Container &elements, const char *delim = ", ");
 
 Sheet &Sheet::add_line(const Line &line)
 {
@@ -16,21 +20,21 @@ const std::vector<Line> &Sheet::lines() const
    return m_lines;
 }
 
-// std::string Sheet::str() const
-// {
-//    std::ostringstream stream;
-//    for(const auto &line : m_lines)
-//    {
-//       stream << line->str() << '\n';
-//    }
-//    return stream.str();
-// }
-
 Line &Line::operator+=(const LinePart &rhs)
 {
    m_parts.push_back(rhs);
    return *this;
 }
+
+std::ostream& operator<<(std::ostream& os, const Sheet &sheet)
+{
+   const auto &lines = sheet.lines();
+   os << "Sheet{";
+   stream_join(os, lines);
+   os << "}";
+   return os;
+}
+
 
 Line::Line()
 {
@@ -39,6 +43,15 @@ Line::Line()
 Line::Line(std::initializer_list<LinePart> parts)
    : m_parts(parts)
 {
+}
+
+std::ostream& operator<<(std::ostream& os, const Line &line)
+{
+   const auto &parts = line.parts();
+   os << "Line{";
+   stream_join(os, parts);
+   os << "}";
+   return os;
 }
 
 const std::vector<LinePart> &Line::parts() const
@@ -80,4 +93,23 @@ const lyrics_t &LinePart::lyrics() const
 bool operator==(const LinePart &lhs, const LinePart &rhs)
 {
    return lhs.chord() == rhs.chord() && lhs.lyrics() == rhs.lyrics();
+}
+
+std::ostream& operator<<(std::ostream& os, const LinePart &part)
+{
+   return os << "LinePart{chord=" << part.chord() << ", lyrics=" << part.lyrics() << "}";
+}
+
+
+template<typename Container>
+void stream_join(std::ostream& os, const Container &elements, const char *delim = ", ")
+{
+   if(!elements.empty())
+   {
+      std::ostream_iterator<typename Container::value_type> os_it{os, delim};
+      auto end = elements.end();
+      --end;
+      std::copy(elements.begin(), end, os_it);
+      os << *end;
+   }
 }

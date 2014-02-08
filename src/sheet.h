@@ -2,6 +2,7 @@
 #define SHEET_H
 
 #include <initializer_list>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -49,5 +50,8 @@ private:
 bool operator==(const Line &lhs, const Line &rhs);
 
 bool operator==(const LinePart &lhs, const LinePart &rhs);
+std::ostream& operator<<(std::ostream& os, const Sheet &sheet);
+std::ostream& operator<<(std::ostream& os, const Line &line);
+std::ostream& operator<<(std::ostream& os, const LinePart &part);
 
 #endif
