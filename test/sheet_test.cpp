@@ -82,6 +82,16 @@ TEST(LineTest, EqualShouldReturnFalseForNonEqualLines)
    EXPECT_FALSE(line1 == line2);
 }
 
+TEST(LineTest, shouldAddInitializerListMembers)
+{
+   auto part1 = LinePart{Chord{"A"}, lyrics_t{}};
+   auto part2 = LinePart{Chord{}, lyrics_t{}};
+   Line line{part1, part2};
+   ASSERT_EQ(2, line.parts().size());
+   EXPECT_EQ(part1, line.parts()[0]);
+   EXPECT_EQ(part2, line.parts()[1]);
+}
+
 TEST(SheetTest, ShouldStoreLine)
 {
    Sheet sheet;

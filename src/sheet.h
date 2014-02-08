@@ -1,6 +1,7 @@
 #ifndef SHEET_H
 #define SHEET_H
 
+#include <initializer_list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,6 +25,8 @@ class Line
 {
 public:
    using value_type = LinePart;
+   Line();
+   Line(std::initializer_list<LinePart> parts);
    Line &operator+=(const LinePart &rhs);
    const std::vector<LinePart> &parts() const;
 private:

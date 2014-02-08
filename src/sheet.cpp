@@ -32,6 +32,15 @@ Line &Line::operator+=(const LinePart &rhs)
    return *this;
 }
 
+Line::Line()
+{
+}
+
+Line::Line(std::initializer_list<LinePart> parts)
+   : m_parts(parts)
+{
+}
+
 const std::vector<LinePart> &Line::parts() const
 {
    return m_parts;
