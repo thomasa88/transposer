@@ -54,7 +54,7 @@ void AsciiParser::append_chord_buffer_to_sheet()
    }
 }
 
-bool AsciiParser::has_chords_in_buffer()
+bool AsciiParser::has_chords_in_buffer() const
 {
    return m_chord_buffer.size() != 0;
 }
