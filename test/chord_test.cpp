@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "chord.h"
 
+#include <sstream>
+
 TEST(ChordTest, CreateFromString)
 {
    Chord chord{"C#sus4"};
@@ -108,4 +110,12 @@ TEST(ChordTest, ShouldHaveChordIfConstructedWithArguments)
 {
    Chord chord{"A"};
    EXPECT_TRUE(chord.has_chord());
+}
+
+TEST(ChordTest, ShouldOutputRepresentationToStream)
+{
+   Chord chord{"G#7sus2"};
+   std::ostringstream stream;
+   stream << chord;
+   EXPECT_EQ("Chord{root=G#, quality=7sus2}", stream.str());
 }

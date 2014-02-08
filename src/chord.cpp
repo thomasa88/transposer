@@ -81,3 +81,8 @@ bool Chord::has_chord() const
 {
    return m_root.length() > 0;
 }
+
+std::ostream &operator<<(std::ostream& os, const Chord &chord)
+{
+   return os << "Chord{root=" + chord.m_root + ", quality=" + chord.m_quality + "}";
+}

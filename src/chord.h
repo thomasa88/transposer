@@ -1,6 +1,7 @@
 #ifndef CHORD_H
 #define CHORD_H
 
+#include <iostream>
 #include <string>
 
 class Chord
@@ -14,6 +15,7 @@ public:
    bool operator==(const Chord &other) const;
    bool has_chord() const;
 private:
+   friend std::ostream &operator<<(std::ostream& os, const Chord &chord);
    std::string::size_type find_root_length(const std::string &chord_string) const;
    std::string m_quality;
    std::string m_root;
