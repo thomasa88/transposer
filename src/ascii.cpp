@@ -1,8 +1,11 @@
+#include <algorithm>
 #include <sstream>
 #include <vector>
 //gcc 4.8 does not support c++11 regex
 //#include <regex>
 #include <boost/regex.hpp>
+
+#include <boost/algorithm/string.hpp>
 
 #include "ascii.h"
 #include "chord.h"
@@ -89,9 +92,19 @@ void AsciiParser::append_lyrics_with_chords_to_sheet(const std::string &ascii_li
    auto position_it = m_position_buffer.begin();
    size_t position = *position_it;
    size_t next_position = *(++position_it);
+   if(position != 0)
+   {
+      auto trimmed_ascii = boost::algorithm::trim_left_copy(ascii_line.substr(0, position));
+      if(!trimmed_ascii.empty())
+      {
+	 line += LinePart{trimmed_ascii};
+      }
+   }
    for(const Chord &chord : m_chord_buffer)
    {
-      line += LinePart{chord, ascii_line.substr(position, next_position - position)};
+      std::string ascii_substr{ascii_line.substr(position, next_position - position)};
+      erase_if_only_spaces(ascii_substr);
+      line += LinePart{chord, ascii_substr};
       position = next_position;
       next_position = *(++position_it);
    }
@@ -99,9 +112,19 @@ void AsciiParser::append_lyrics_with_chords_to_sheet(const std::string &ascii_li
    m_chord_buffer.clear();
 }
 
-void AsciiParser::append_lone_lyrics_line_to_sheet(const std::string &ascii_line)
+void AsciiParser::erase_if_only_spaces(std::string &ascii) const
+{
+   if(std::all_of(ascii.begin(), ascii.end(),
+		  [] (std::string::value_type character) {return character == ' ';}))
+   {
+      ascii.erase();
+   }
+}
+
+void AsciiParser::append_lone_lyrics_line_to_sheet(std::string ascii_line)
 {
    Line line;
-   line += LinePart{ascii_line};
+   boost::algorithm::trim(ascii_line);
+   line += LinePart{std::move(ascii_line)};
    m_sheet.add_line(line);
 }

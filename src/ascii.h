@@ -14,8 +14,9 @@ private:
    void parse_chord_line(const std::string &ascii_line);
    void parsed_chords_to_buffer();
    void append_lyrics_with_chords_to_sheet(const std::string &ascii_line);
-   void append_lone_lyrics_line_to_sheet(const std::string &ascii_line);
    bool has_chords_in_buffer();
+   void append_lone_lyrics_line_to_sheet(std::string ascii_line);
+   void erase_if_only_spaces(std::string &ascii) const;
    Sheet m_sheet;
    std::vector<Chord> m_chord_buffer;
    std::vector<size_t> m_position_buffer;
