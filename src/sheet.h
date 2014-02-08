@@ -47,8 +47,8 @@ private:
    lyrics_t m_lyrics;
 };
 
+bool operator==(const Sheet &lhs, const Sheet &rhs);
 bool operator==(const Line &lhs, const Line &rhs);
-
 bool operator==(const LinePart &lhs, const LinePart &rhs);
 std::ostream& operator<<(std::ostream& os, const Sheet &sheet);
 std::ostream& operator<<(std::ostream& os, const Line &line);

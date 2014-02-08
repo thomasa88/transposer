@@ -26,6 +26,11 @@ Line &Line::operator+=(const LinePart &rhs)
    return *this;
 }
 
+bool operator==(const Sheet &lhs, const Sheet &rhs)
+{
+   return lhs.lines() == rhs.lines();
+}
+
 std::ostream& operator<<(std::ostream& os, const Sheet &sheet)
 {
    const auto &lines = sheet.lines();

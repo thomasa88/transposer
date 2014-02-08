@@ -155,6 +155,29 @@ TEST(SheetTest, ShouldStoreLinesInOrder)
    EXPECT_EQ(lines, sheet.lines());
 }
 
+TEST(SheetTest, EqualSheetsShouldCompareEqual)
+{
+   Sheet sheet;
+   std::vector<Line> lines(2);
+   lines[1] += LinePart{Chord{}, lyrics_t{}};
+   sheet.add_line(lines[0]);
+   sheet.add_line(lines[1]);
+   EXPECT_TRUE(sheet == sheet);
+}
+
+TEST(SheetTest, NonEqualSheetsShouldCompareNonEqual)
+{
+   Sheet sheet1;
+   std::vector<Line> lines(2);
+   lines[1] += LinePart{Chord{}, lyrics_t{}};
+   sheet1.add_line(lines[0]);
+   sheet1.add_line(lines[1]);
+
+   Sheet sheet2;
+
+   EXPECT_FALSE(sheet1 == sheet2);
+}
+
 TEST(SheetTest, ShouldOutputRepresentationToStreamWhenNonEmpty)
 {
    Sheet sheet;
