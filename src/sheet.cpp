@@ -20,6 +20,12 @@ const std::vector<Line> &Sheet::lines() const
    return m_lines;
 }
 
+bool Sheet::empty() const
+{
+   return m_lines.empty();
+}
+
+
 Line &Line::operator+=(const LinePart &rhs)
 {
    m_parts.push_back(rhs);

@@ -18,6 +18,7 @@ class Sheet
 public:
    Sheet &add_line(const Line &line);
    const std::vector<Line> &lines() const;
+   bool empty() const;
 private:
    std::vector<Line> m_lines;
 };

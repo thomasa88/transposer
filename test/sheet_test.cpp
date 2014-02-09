@@ -203,3 +203,17 @@ TEST(SheetTest, ShouldOutputRepresentationToStreamWhenEmpty)
    EXPECT_EQ("Sheet{}", stream.str());
 }
 
+TEST(SheetTest, ShouldReportEmptyWhenNoLinesAdded)
+{
+   Sheet sheet;
+
+   EXPECT_TRUE(sheet.empty());
+}
+
+TEST(SheetTest, ShouldReportNonEmptyWhenLinesAdded)
+{
+   Sheet sheet;
+   sheet.add_line({});
+
+   EXPECT_FALSE(sheet.empty());
+}
