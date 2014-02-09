@@ -15,14 +15,38 @@ Sheet &Sheet::add_line(const Line &line)
    return *this;
 }
 
-const std::vector<Line> &Sheet::lines() const
-{
-   return m_lines;
-}
-
 bool Sheet::empty() const
 {
    return m_lines.empty();
+}
+
+int Sheet::line_count() const
+{
+   return m_lines.size();
+}
+
+bool Sheet::operator==(const Sheet &rhs) const
+{
+   return m_lines == rhs.m_lines;
+}
+
+Line &Sheet::operator[](int line_index)
+{
+   return m_lines.at(line_index);
+}
+
+const Line &Sheet::operator[](int line_index) const
+{
+   return m_lines.at(line_index);
+}
+
+std::ostream& operator<<(std::ostream& os, const Sheet &sheet)
+{
+   const auto &lines = sheet.m_lines;
+   os << "Sheet{";
+   stream_join(os, lines);
+   os << "}";
+   return os;
 }
 
 
@@ -31,21 +55,6 @@ Line &Line::operator+=(const LinePart &rhs)
    m_parts.push_back(rhs);
    return *this;
 }
-
-bool operator==(const Sheet &lhs, const Sheet &rhs)
-{
-   return lhs.lines() == rhs.lines();
-}
-
-std::ostream& operator<<(std::ostream& os, const Sheet &sheet)
-{
-   const auto &lines = sheet.lines();
-   os << "Sheet{";
-   stream_join(os, lines);
-   os << "}";
-   return os;
-}
-
 
 Line::Line()
 {

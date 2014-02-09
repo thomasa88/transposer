@@ -2,6 +2,7 @@
 #include "sheet.h"
 
 #include <algorithm>
+#include <stdexcept>
 #include <vector>
 #include "chord.h"
 
@@ -141,8 +142,8 @@ TEST(SheetTest, ShouldStoreLine)
    Sheet sheet;
    Line line;
    sheet.add_line(line);
-   ASSERT_EQ(1, sheet.lines().size());
-   EXPECT_EQ(line, sheet.lines()[0]);
+   ASSERT_EQ(1, sheet.line_count());
+   EXPECT_EQ(line, sheet[0]);
 }
 
 TEST(SheetTest, ShouldStoreLinesInOrder)
@@ -152,7 +153,8 @@ TEST(SheetTest, ShouldStoreLinesInOrder)
    lines[1] += LinePart{Chord{}, lyrics_t{}};
    sheet.add_line(lines[0]);
    sheet.add_line(lines[1]);
-   EXPECT_EQ(lines, sheet.lines());
+   EXPECT_EQ(lines[0], sheet[0]);
+   EXPECT_EQ(lines[1], sheet[1]);
 }
 
 TEST(SheetTest, EqualSheetsShouldCompareEqual)
@@ -216,4 +218,63 @@ TEST(SheetTest, ShouldReportNonEmptyWhenLinesAdded)
    sheet.add_line({});
 
    EXPECT_FALSE(sheet.empty());
+}
+
+TEST(SheetTest, ShouldReportNumberOfLines)
+{
+   Sheet sheet;
+   sheet.add_line({});
+   sheet.add_line({});
+
+   EXPECT_EQ(2, sheet.line_count());
+}
+
+TEST(SheetTest, SubscriptShouldReturnLine)
+{
+   Sheet sheet;
+   Line line2{{LinePart{"line2"}}};
+   sheet.add_line({});
+   sheet.add_line(line2);
+
+   EXPECT_EQ(line2, sheet[1]);
+}
+
+TEST(SheetTest, ConstSubscriptShouldReturnLine)
+{
+   Sheet sheet;
+   Line line2{{LinePart{"line2"}}};
+   sheet.add_line({});
+   sheet.add_line(line2);
+
+   const Sheet &const_sheet = sheet;
+
+   EXPECT_EQ(line2, const_sheet[1]);
+}
+
+TEST(SheetTest, SubscriptShouldThrowWhenPositiveOutOfBounds)
+{
+   Sheet sheet;
+
+   EXPECT_THROW(sheet[0], std::out_of_range);
+}
+
+TEST(SheetTest, ConstSubscriptShouldThrowWhenPositiveOutOfBounds)
+{
+   const Sheet sheet;
+
+   EXPECT_THROW(sheet[0], std::out_of_range);
+}
+
+TEST(SheetTest, SubscriptShouldThrowWhenNegativeOutOfBounds)
+{
+   Sheet sheet;
+
+   EXPECT_THROW(sheet[-1], std::out_of_range);
+}
+
+TEST(SheetTest, ConstSubscriptShouldThrowWhenNegativeOutOfBounds)
+{
+   const Sheet sheet;
+
+   EXPECT_THROW(sheet[-1], std::out_of_range);
 }

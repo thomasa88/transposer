@@ -17,9 +17,13 @@ class Sheet
 {
 public:
    Sheet &add_line(const Line &line);
-   const std::vector<Line> &lines() const;
    bool empty() const;
+   int line_count() const;
+   bool operator==(const Sheet &rhs) const;
+   Line &operator[](int line_index);
+   const Line &operator[](int line_index) const;
 private:
+   friend std::ostream& operator<<(std::ostream& os, const Sheet &sheet);
    std::vector<Line> m_lines;
 };
 
@@ -48,10 +52,8 @@ private:
    lyrics_t m_lyrics;
 };
 
-bool operator==(const Sheet &lhs, const Sheet &rhs);
 bool operator==(const Line &lhs, const Line &rhs);
 bool operator==(const LinePart &lhs, const LinePart &rhs);
-std::ostream& operator<<(std::ostream& os, const Sheet &sheet);
 std::ostream& operator<<(std::ostream& os, const Line &line);
 std::ostream& operator<<(std::ostream& os, const LinePart &part);
 
