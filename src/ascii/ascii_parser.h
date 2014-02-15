@@ -2,7 +2,9 @@
 #define ASCII_H
 
 #include <string>
-#include "sheet.h"
+#include <vector>
+#include "chord.h"
+#include "sheet/sheet.h"
 
 class AsciiParser
 {
@@ -25,7 +27,5 @@ private:
    std::vector<Chord> m_parsed_line_chords;
    std::vector<size_t> m_parsed_line_positions;
 };
-
-std::string sheet_to_ascii(const Sheet &sheet);
 
 #endif

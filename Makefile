@@ -7,6 +7,9 @@ BIN_DIR := $(BUILD_DIR)/bin
 SRC_DIR := src
 TEST_DIR := test
 
+SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/**/*.cpp)
+TEST_FILES := $(wildcard $(TEST_DIR)/*.cpp) $(wildcard $(TEST_DIR)/**/*.cpp)
+
 GTEST_DIR := googletest
 LIBGTEST := $(OBJ_DIR)/libgtest.a
 GTEST_MAIN := $(GTEST_DIR)/src/gtest_main.cc
@@ -19,7 +22,7 @@ TEST_LDFLAGS := $(LD_FLAGS)
 
 transposer: $(BIN_DIR)/transposer
 
-$(BIN_DIR)/transposer: $(SRC_DIR)/*.cpp | $(BIN_DIR)
+$(BIN_DIR)/transposer: $(SRC_FILES) | $(BIN_DIR)
 	g++ $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 
@@ -29,7 +32,7 @@ run_test: test
 
 test: $(BIN_DIR)/test
 
-$(BIN_DIR)/test: $(GTEST_MAIN) $(SRC_DIR)/*.cpp $(TEST_DIR)/*.cpp $(LIBGTEST) | $(BIN_DIR)
+$(BIN_DIR)/test: $(GTEST_MAIN) $(SRC_FILES) $(TEST_FILES) $(LIBGTEST) | $(BIN_DIR)
 	g++ $(TEST_CFLAGS) $(TEST_LDFLAGS) $^ -o $@
 
 $(OBJ_DIR)/gtest-all.o: $(GTEST_DIR)/src/gtest-all.cc | $(OBJ_DIR)

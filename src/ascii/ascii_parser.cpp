@@ -4,11 +4,9 @@
 //gcc 4.8 does not support c++11 regex
 //#include <regex>
 #include <boost/regex.hpp>
-
 #include <boost/algorithm/string.hpp>
 
-#include "ascii.h"
-#include "chord.h"
+#include "ascii_parser.h"
 
 Sheet AsciiParser::parse(const std::string &ascii)
 {

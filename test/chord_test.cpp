@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 #include "chord.h"
 
-#include <sstream>
-
 TEST(ChordTest, CreateFromString)
 {
    Chord chord{"C#sus4"};

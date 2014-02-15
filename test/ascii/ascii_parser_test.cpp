@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "ascii.h"
+#include "ascii/ascii_parser.h"
 
 class AsciiParserTest : public ::testing::Test
 {
